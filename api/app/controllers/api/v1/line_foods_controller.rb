@@ -3,6 +3,21 @@ module Api
     class LineFoodsController < ApplicationController
       before_action :set_ordered_food, only: %i[create]
 
+      def index
+        line_foods = LineFood.active
+        if line_foods.exists?
+          # TODO: &:を用いてリファクタする
+          render json: {
+            line_food_ids: line_foods.map { |line_food| line_food.id },
+            restaurant: line_foods[0].restaurant,
+            count: line_foods.sum { |line_food| line_food[:count] },
+            amount: line_foods.sum { |line_food| line_food.total_amount },
+          }, status: :ok
+        else
+          render json: {}, status: :no_content
+        end
+      end
+
       def create
         return render_not_acceptable_with_existing_and_new_restaurant if LineFood.exists_active_line_food_in_other_restaurant?
 
@@ -33,6 +48,7 @@ module Api
       def set_line_food(ordered_food)
         if ordered_food.line_food.present?
           @line_food = ordered_food.line_food
+          # TODO: update!を用いてリファクタする
           @line_food.attributes = {
             count: ordered_food.line_food.count + params[:count],
             active: true
