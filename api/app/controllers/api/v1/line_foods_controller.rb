@@ -32,6 +32,7 @@ module Api
 
       def replace
         LineFood.active.other_restaurant(@ordered_food.restaurant.id).each do |line_food|
+          # TODO: update_attributeをupdateに置き換える
           line_food.update_attribute(:active, false)
         end
 
