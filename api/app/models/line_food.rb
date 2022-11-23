@@ -12,4 +12,8 @@ class LineFood < ApplicationRecord
   def total_amount
     food.price * count
   end
+
+  def self.exists_active_line_food_in_other_restaurant?(other_restaurant_id)
+    self.active.other_restaurant(other_restaurant_id).exists?
+  end
 end
